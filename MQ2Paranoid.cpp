@@ -1,9 +1,11 @@
-#include "../MQ2Plugin.h" 
-#define MODULE_NAME "MQ2Paranoid" 
-PreSetup(MODULE_NAME); 
+#include <mq/Plugin.h>
+
+constexpr auto MODULE_NAME = "MQ2Paranoid" ;
+PreSetup(MODULE_NAME);
+PLUGIN_VERSION(2008.02);
 
 time_t Seconds; 
-unsigned long ulDelay = 7; 
+int ulDelay = 7; 
 bool bZoning = false; 
 bool bParanoid = true; 
 bool bEnter = true; 
@@ -18,14 +20,7 @@ void ParanoidState()
     char szOff[10] = "\arOFF\ax"; 
     WriteChatf("\ay%s\aw:: %s - Enter(%s) Exit(%s) Chat(%s) Pop(%s) Delay(\ag%u\ax)", MODULE_NAME, bParanoid ? szOn : szOff, bEnter ? szOn : szOff, bExit ? szOn : szOff, bChatOutput ? szOn : szOff, bPopOutput ? szOn : szOff, ulDelay); 
 } 
-template <unsigned int _Size>LPSTR SafeItoa(int _Value, char(&_Buffer)[_Size], int _Radix)
-{
-	errno_t err = _itoa_s(_Value, _Buffer, _Radix);
-	if (!err) {
-		return _Buffer;
-	}
-	return "";
-}
+
 void RetainParanoia(bool bSave) 
 { 
     if (bSave) 
@@ -36,7 +31,7 @@ void RetainParanoia(bool bSave)
         WritePrivateProfileString("Settings", "Exit", bExit ? "on" : "off", INIFileName); 
         WritePrivateProfileString("Settings", "Chat", bChatOutput ? "on" : "off", INIFileName); 
         WritePrivateProfileString("Settings", "Popup", bPopOutput ? "on" : "off", INIFileName); 
-        WritePrivateProfileString("Settings", "Delay", SafeItoa((int)ulDelay, szSave, 10), INIFileName);
+        WritePrivateProfileString("Settings", "Delay", std::to_string(ulDelay), INIFileName);
     } 
     else 
     { 
